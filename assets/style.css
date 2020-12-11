@@ -1,0 +1,86 @@
+body {
+    background: #f3f3f3;
+}
+.main-form {
+    width: 50%;
+    max-width: 650px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.main-form input, .main-form textarea {
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    box-sizing: border-box;
+}
+
+.main-form input[type="date"], .main-form input[type="time"] {
+    display: inline-block;
+    width: 40%;
+}
+
+.main-form label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+.main-form input[type="submit"] {
+    margin-top: 10px;
+    color: #fff;
+    background-color: #28a745;
+    border-color: #28a745;
+    cursor: pointer;
+    font-size: 18px;
+}
+.main-form input[type="submit"]:hover {
+    color: #fff;
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.error-text {
+    margin-top: 3px;
+    color: #dc3545;
+    font-size: 14px;
+    font-style: italic;
+    display: none;
+}
+
+.field-error {
+    border: 1px solid #dc3545 !important;
+}
+
+.msg {
+    margin: 15px 0;
+    padding: .75rem 1.25rem;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    text-align: center;
+    display: none;
+}
+
+.msg-success {
+    color: #155724;
+    background-color: #d4edda;
+}
+
+.msg-error {
+    color: #721c24;
+    background-color: #f8d7da;
+}
+
+@media only screen and (max-width: 600px) {
+    .main-form {
+        width: 100%;
+        border-radius: 10px;
+        background: white;
+    }
+}
