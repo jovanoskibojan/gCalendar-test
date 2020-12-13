@@ -39,6 +39,10 @@
                 <textarea id="note" name="note" rows="5"></textarea>
             </div>
             <div>
+                <div id="captcha" class="g-recaptcha captcha" data-sitekey="6Lf3-tMUAAAAAFPzh7zFCyn4oiEht6gI9uCLnPK0"></div>
+                <p class="error-text captcha_error"></p>
+            </div>
+            <div>
                 <div id="alert" class="msg"></div>
             </div>
             <div>
@@ -54,6 +58,7 @@
         </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src='https://www.google.com/recaptcha/api.js?hl=en'></script>
     <script src="assets/script.js"></script>
 </body>
 </html>

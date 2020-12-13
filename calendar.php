@@ -83,6 +83,19 @@ class Calendar {
             $errors['errors'][] = $error;
         }
 
+        $res = $this->checkCaptcha($formData['g-recaptcha-response']);
+        $error = [];
+        if ( !$res['success'] ) {
+            $error['status'] = false;
+            $error['field'] = 'captcha';
+            $error['error'] = 'Please check this box';
+        }
+        else {
+            $error['status'] = true;
+            $error['field'] = 'captcha';
+        }
+        $errors['errors'][] = $error;
+
         $phoneNum = preg_replace("/[^0-9]/", "", $formData['phone'] );
         $phoneLength = strlen($phoneNum);
         if ((preg_match("/[^0-9-.()+\/]/", $formData['phone']))) {
@@ -120,6 +133,28 @@ class Calendar {
         return $errors;
     }
 
+    private function checkCaptcha($user_response) {
+        $fields_string = '';
+        $fields = array(
+            'secret' => '6Lf3-tMUAAAAADRMlVcJBJhp474M5YDga19SP-PC',
+            'response' => $user_response
+        );
+        foreach($fields as $key=>$value)
+            $fields_string .= $key . '=' . $value . '&';
+        $fields_string = rtrim($fields_string, '&');
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
+        curl_setopt($ch, CURLOPT_POST, count($fields));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, True);
+
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($result, true);
+    }
+
     public function addToCalendar($data) {
         $client = $this->client;
 
@@ -138,7 +173,7 @@ class Calendar {
         if ($client->getAccessToken()) {
             $event = new Google_Service_Calendar_Event(array(
                 'summary' => $name,
-                'description' => $note,
+                'description' => 'Phone: ' . $phone .'<br>' . $note,
                 'start' => array(
                     'dateTime' => $startDate,
                     'timeZone' => 'America/Los_Angeles',
