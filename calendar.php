@@ -66,23 +66,42 @@ class Calendar {
         $errors = [];
         $hasError = false;
 
+        // This loop check if every required field is filled
         foreach ($formData as $key => $data) {
             $error = [];
             if(empty($data) && $key != 'note') {
-                if($key != 'date') {
-                    $hasError = true;
-                    $error['status'] = false;
-                    $error['field'] = $key;
-                    $error['error'] = 'This field should not be empty';
-                }
+                $hasError = true;
+                $error['status'] = false;
+                $error['field'] = $key;
+                $error['error'] = 'This field should not be empty';
             }
             else {
-                $error['status'] = true;
-                $error['field'] = $key;
+                if($key == 'phone') {
+                    // Removes all special characters from the phone number
+                    $phoneNum = preg_replace("/[^0-9]/", "", $formData['phone'] );
+                    $phoneLength = strlen($phoneNum);
+                    if ((preg_match("/[^0-9-.()+\/]/", $formData['phone'])) || ($phoneLength > 13 || $phoneLength < 9)) {
+                        $error = [];
+                        $hasError = true;
+                        $error['status'] = false;
+                        $error['field'] = 'phone';
+                        $error['error'] = 'Please enter valid phone number';
+                    }
+                    else {
+                        $error['status'] = true;
+                        $error['field'] = 'phone';
+                    }
+                    $errors['errors'][] = $error;
+                }
+                else {
+                    $error['status'] = true;
+                    $error['field'] = $key;
+                }
             }
             $errors['errors'][] = $error;
         }
 
+        // Captcha check
         $res = $this->checkCaptcha($formData['g-recaptcha-response']);
         $error = [];
         if ( !$res['success'] ) {
@@ -96,21 +115,7 @@ class Calendar {
         }
         $errors['errors'][] = $error;
 
-        $phoneNum = preg_replace("/[^0-9]/", "", $formData['phone'] );
-        $phoneLength = strlen($phoneNum);
-        if ((preg_match("/[^0-9-.()+\/]/", $formData['phone']))) {
-            $error = [];
-            $hasError = true;
-            $error['status'] = false;
-            $error['field'] = 'phone';
-            $error['error'] = 'Please enter valid phone number';
-        }
-        else {
-            $error['status'] = true;
-            $error['field'] = 'phone';
-        }
-        $errors['errors'][] = $error;
-
+        // Email verification
         if (!filter_var($formData['email'], FILTER_VALIDATE_EMAIL)) {
             $error = [];
             $hasError = true;
@@ -162,11 +167,10 @@ class Calendar {
         $phone = $data['phone'];
         $email = $data['email'];
         $note = $data['note'];
-        $startDate = date('c', strtotime($data['date']. ", " .$data['time'])); //datetimes must be in this format
+        $startDate = date('c', strtotime($data['date']. ", " .$data['time']));
         $time = new DateTime($startDate);
         $time->add(new DateInterval('PT' . 30 . 'M'));
-        $endDate = date("c", strtotime('+30 minutes', $startDate)); //datetimes must be in this format
-        $endDate = $time->format('c');; //datetimes must be in this format
+        $endDate = $time->format('c');
 
         $cal = new Google_Service_Calendar($client);
 
@@ -194,8 +198,7 @@ class Calendar {
             ));
 
             $calendarId = '8irhh2s9mr6tc860g9lofhv2kk@group.calendar.google.com';
-            //  $event = $cal->events->insert($calendarId, $event, array('sendUpdates' => 'all'));
-            $event = $cal->events->insert($calendarId, $event);
+            $event = $cal->events->insert($calendarId, $event, array('sendUpdates' => 'all'));
             $message = [];
             $message['success'] = true;
             $message['link'] = $event->htmlLink;

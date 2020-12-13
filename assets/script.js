@@ -24,6 +24,10 @@ $(document).ready(function(){
                 alert.slideDown();
             }
             else {
+                $('.field-error').each(function(index, element) {
+                    $(this).removeClass('field-error');
+                    $(this).next().hide();
+                });
                 alert.html('Event added. <a href="' + response.link + '" target="_blank">Click here</a> to view it');
                 alert.removeClass('msg-error');
                 alert.addClass('msg-success');
